@@ -2,7 +2,10 @@
 require('dotenv').config();
 
 const express = require('express');
+const bodyParser = require('body-parser');
 const cors = require('cors');
+
+const { createUser } = require('./middleware/middleware');
 
 const app = express();
 
@@ -20,6 +23,9 @@ if (process.env.RUN_MODE === 'development') {
 // so that your API is remotely testable by FCC
 app.use(cors());
 
+// Parse url encoded bodies:
+app.use(bodyParser.urlencoded({ extended: false }));
+
 // Serve static files from 'public' folder
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static('public'));
@@ -28,6 +34,12 @@ app.use(express.static('public'));
 // http://expressjs.com/en/starter/basic-routing.html
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html');
+});
+
+// POST request to `/api/users` to create a new user:
+app.post('/api/users', createUser, (req, res) => {
+  const { _id, username } = res.locals.userDocument;
+  return res.json({ _id, username });
 });
 
 // 404 page not found:
