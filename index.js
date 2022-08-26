@@ -10,7 +10,7 @@ const {
   getUserById,
   getAllUsers,
   createExercise,
-  getAllExerciseByUserId,
+  getFilteredExercisesByUserId: getAllExerciseByUserId,
 } = require('./middleware/middleware');
 
 const app = express();
@@ -55,7 +55,7 @@ app.post('/api/users', createUser, (req, res) => {
 
 // GET request to `/api/users/:id/logs` returns full exercise log of user
 app.get(
-  '/api/users/:_id(\\w+)/logs',
+  '/api/users/:_id/logs',
   getUserById,
   getAllExerciseByUserId,
   (req, res) => {
@@ -71,7 +71,17 @@ app.get(
     const count = log.length;
     const { _id, username } = res.locals.userDocument;
 
-    return res.json({ _id, username, count, log });
+    return res.json({
+      _id,
+      username,
+      filters: {
+        from: req.query.from || 'any',
+        to: req.query.to || 'any',
+        limit: parseInt(req.query.limit) || 'all',
+      },
+      count,
+      log,
+    });
   },
 );
 

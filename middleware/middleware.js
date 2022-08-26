@@ -88,7 +88,7 @@ middleware.createExercise = (req, res, next) => {
     date = new Date(date).getTime();
   }
 
-  if (!user_id || !description || !duration || date === 'Invalid Date') {
+  if (!user_id || !description || !duration || isNaN(date)) {
     return res.json({
       error:
         '_id, description, duration and a valid date are required to create an Exercise',
@@ -109,12 +109,45 @@ middleware.createExercise = (req, res, next) => {
 };
 
 // Gathers all Exercise Documents for a given User _id (user_id in Exercise)
+// Applies filters if present in query parameters
 // Requires etUserById middleware to be called first and successfully find the User
 // Adds all Exercise documents to res.locals.exerciseDocumentArray
-middleware.getAllExerciseByUserId = (req, res, next) => {
+middleware.getFilteredExercisesByUserId = (req, res, next) => {
   const user_id = res.locals.userDocument._id;
 
-  Exercise.find({ user_id })
+  const { from, to, limit } = req.query;
+
+  // If limit is not an integer, return an error
+  if (limit && !/^[0-9]+$/.test(limit)) {
+    return res.json({
+      error: `Invalid limit given when requesting exercises: LIMIT: ${limit}`,
+    });
+  }
+
+  const dateRequirements = { $gte: 0 };
+  if (from) {
+    dateRequirements.$gte = new Date(from).getTime();
+  }
+
+  if (to) {
+    dateRequirements.$lte = new Date(to).getTime();
+  }
+
+  // If either time is invalid (NaN time), return an error:
+  if (
+    (from && isNaN(dateRequirements.$gte)) ||
+    (to && isNaN(dateRequirements.$lte))
+  ) {
+    return res.json({
+      error: `Invalid date given for from or to: FROM: ${from || 'N/A'}, TO: ${
+        to || 'N/A'
+      }`,
+    });
+  }
+
+  Exercise.find({ user_id, date: dateRequirements })
+    .limit(limit ? parseInt(limit) : null)
+    .sort('-date')
     .then((exerciseDocuments) => {
       res.locals.exerciseDocumentArray = exerciseDocuments;
       next();
