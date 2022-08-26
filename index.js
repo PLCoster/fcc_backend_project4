@@ -15,6 +15,14 @@ const {
 
 const app = express();
 
+const formatDate = (date) => {
+  // Alternate possibility to avoid time zone translations:
+  // return new Date(date).toUTCString().slice(0, 16)
+
+  // Required to pass FCC tests
+  return new Date(date).toDateString();
+};
+
 // Log incoming requests in development:
 if (process.env.RUN_MODE === 'development') {
   app.use((req, res, next) => {
@@ -64,7 +72,7 @@ app.get(
       ({ description, duration, date }) => ({
         description,
         duration,
-        date: new Date(date).toUTCString().slice(0, 16),
+        date: formatDate(date),
       }),
     );
 
@@ -99,7 +107,7 @@ app.post(
       username,
       description,
       duration,
-      date: new Date(date).toUTCString().slice(0, 16),
+      date: formatDate(date),
     });
   },
 );
