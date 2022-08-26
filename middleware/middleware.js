@@ -25,6 +25,35 @@ middleware.createUser = (req, res, next) => {
     });
 };
 
+// Get a single user by their id from query parameter
+// If the user is found, adds their User document to res.locals.userDocument
+middleware.getUserById = (req, res, next) => {
+  const user_id = req.params._id;
+
+  if (!user_id || user_id.length !== 24) {
+    // _id length is 12 bytes (2^96) = 24 hexadecimal chars (16^24 = (2^4)^24 = 2^96)
+    return res.json({
+      error: 'Valid _id is required to create an Exercise',
+    });
+  }
+
+  // Find the User in the DB:
+  User.findById(user_id)
+    .exec()
+    .then((userDocument) => {
+      if (!userDocument) {
+        return res.json({
+          error: `User with _id ${user_id} not found`,
+        });
+      }
+
+      // Otherwise User has been found, add to locals, move to next middleware
+      res.locals.userDocument = userDocument;
+      next();
+    })
+    .catch((err) => {});
+};
+
 // Gets all users from DB
 // Adds all user documents to res.locals.userDocumentArray
 middleware.getAllUsers = (req, res, next) => {
@@ -44,9 +73,10 @@ middleware.getAllUsers = (req, res, next) => {
 };
 
 // Creates a new Exercise Document if User ID exists, and Exercise Info Complete
+// Requires getUserById middleware to be called first and successfully find the User
+// Adds new Exercise document to res.locals.exerciseDocument
 middleware.createExercise = (req, res, next) => {
-  console.log(req.params);
-  const user_id = req.params._id;
+  const user_id = res.locals.userDocument._id;
   let { description, duration, date } = req.body;
 
   console.log(user_id, description, duration, date);
@@ -65,23 +95,7 @@ middleware.createExercise = (req, res, next) => {
     });
   }
 
-  // Find the User in the DB:
-  User.findById(user_id)
-    .exec()
-    .then((userDocument) => {
-      if (!userDocument) {
-        return Promise.reject(`User with _id ${user_id} not found`);
-      }
-
-      // Otherwise User has been found, create the exercise:
-      res.locals.userDocument = userDocument;
-      return Exercise.create({
-        user_id: userDocument._id,
-        description,
-        duration,
-        date,
-      });
-    })
+  Exercise.create({ user_id, description, duration, date })
     .then((exerciseDocument) => {
       res.locals.exerciseDocument = exerciseDocument;
       return next();
@@ -89,7 +103,29 @@ middleware.createExercise = (req, res, next) => {
     .catch((err) => {
       console.error('Error when trying to create a new exercise: ', err);
       return res.json({
-        error: `Error when trying to create a new exercise: ${err}`,
+        error: `Error when trying to create a new exercise`,
+      });
+    });
+};
+
+// Gathers all Exercise Documents for a given User _id (user_id in Exercise)
+// Requires etUserById middleware to be called first and successfully find the User
+// Adds all Exercise documents to res.locals.exerciseDocumentArray
+middleware.getAllExerciseByUserId = (req, res, next) => {
+  const user_id = res.locals.userDocument._id;
+
+  Exercise.find({ user_id })
+    .then((exerciseDocuments) => {
+      res.locals.exerciseDocumentArray = exerciseDocuments;
+      next();
+    })
+    .catch((err) => {
+      console.error(
+        'Error when trying to find all exercises by User Id: ',
+        err,
+      );
+      return res.json({
+        error: `Error when trying to find all exercises by User Id`,
       });
     });
 };

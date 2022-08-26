@@ -7,8 +7,10 @@ const cors = require('cors');
 
 const {
   createUser,
+  getUserById,
   getAllUsers,
   createExercise,
+  getAllExerciseByUserId,
 } = require('./middleware/middleware');
 
 const app = express();
@@ -51,19 +53,46 @@ app.post('/api/users', createUser, (req, res) => {
   return res.json({ _id, username });
 });
 
-// POST request to `/api/users/:id/exercises` creates a new exercise document
-app.post('/api/users/:_id(\\w+)/exercises', createExercise, (req, res) => {
-  const { _id, username } = res.locals.userDocument;
-  const { description, duration, date } = res.locals.exerciseDocument;
+// GET request to `/api/users/:id/logs` returns full exercise log of user
+app.get(
+  '/api/users/:_id(\\w+)/logs',
+  getUserById,
+  getAllExerciseByUserId,
+  (req, res) => {
+    // Process Exercise documents into log:
+    const log = res.locals.exerciseDocumentArray.map(
+      ({ description, duration, date }) => ({
+        description,
+        duration,
+        date: new Date(date).toUTCString().slice(0, 16),
+      }),
+    );
 
-  return res.json({
-    _id,
-    username,
-    description,
-    duration,
-    date: new Date(date).toUTCString().slice(0, 16),
-  });
-});
+    const count = log.length;
+    const { _id, username } = res.locals.userDocument;
+
+    return res.json({ _id, username, count, log });
+  },
+);
+
+// POST request to `/api/users/:id/exercises` creates a new exercise document
+app.post(
+  '/api/users/:_id(\\w+)/exercises',
+  getUserById,
+  createExercise,
+  (req, res) => {
+    const { _id, username } = res.locals.userDocument;
+    const { description, duration, date } = res.locals.exerciseDocument;
+
+    return res.json({
+      _id,
+      username,
+      description,
+      duration,
+      date: new Date(date).toUTCString().slice(0, 16),
+    });
+  },
+);
 
 // 404 page not found:
 app.get('*', (req, res) => {
