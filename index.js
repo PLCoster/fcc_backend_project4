@@ -5,7 +5,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-const { createUser } = require('./middleware/middleware');
+const { createUser, getAllUsers } = require('./middleware/middleware');
 
 const app = express();
 
@@ -34,6 +34,11 @@ app.use(express.static('public'));
 // http://expressjs.com/en/starter/basic-routing.html
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html');
+});
+
+// GET request to `/api/users` shows all users:
+app.get('/api/users', getAllUsers, (req, res) => {
+  return res.json(res.locals.userDocumentArray);
 });
 
 // POST request to `/api/users` to create a new user:
