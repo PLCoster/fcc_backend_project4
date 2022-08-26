@@ -5,7 +5,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-const { createUser, getAllUsers } = require('./middleware/middleware');
+const {
+  createUser,
+  getAllUsers,
+  createExercise,
+} = require('./middleware/middleware');
 
 const app = express();
 
@@ -45,6 +49,20 @@ app.get('/api/users', getAllUsers, (req, res) => {
 app.post('/api/users', createUser, (req, res) => {
   const { _id, username } = res.locals.userDocument;
   return res.json({ _id, username });
+});
+
+// POST request to `/api/users/:id/exercises` creates a new exercise document
+app.post('/api/users/:_id(\\w+)/exercises', createExercise, (req, res) => {
+  const { _id, username } = res.locals.userDocument;
+  const { description, duration, date } = res.locals.exerciseDocument;
+
+  return res.json({
+    _id,
+    username,
+    description,
+    duration,
+    date: new Date(date).toUTCString().slice(0, 16),
+  });
 });
 
 // 404 page not found:
