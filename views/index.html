@@ -41,7 +41,7 @@
       rel="stylesheet"
       type="text/css"
     />
-    <link href="style.css" rel="stylesheet" type="text/css" />
+    <link href="/public/style.css" rel="stylesheet" type="text/css" />
   </head>
 
   <body>
@@ -153,7 +153,13 @@
 
     <div class="container">
       <main>
-        <h1>Exercise Tracker</h1>
+        <h1>
+          <img
+            class="logo"
+            src="/public/logo.png"
+            alt="A white symbol of a running person on a blue square background"
+          />Exercise Tracker
+        </h1>
 
         <hr />
 
@@ -240,19 +246,16 @@
         <h5>To add an Exercise to a User Account:</h5>
         <ul class="usage-list">
           <li>Submit an exercise using the 'Add Exercise' form above.</li>
-          <li>
-            Alternatively, send a POST request to
+          <li>Alternatively, send a POST request to
             <code>/api/users/&lt;USER_ID&gt;/exercises</code> with a valid
-            USER_ID, and a body containing url encoded fields of:
+            USER_ID, and a body containing url encoded fields of:</li>
             <ul>
               <li>'description' (string)</li>
               <li>'duration' (integer)</li>
               <li>'date' (optional, YYYY-MM-DD)</li>
             </ul>
-            For example:
-            <br />
+          <li>For example:</li>
             <code>'description=jogging&duration=30&date=2022-07-16</code>
-          </li>
         </ul>
 
         <h5>To view a User's Exercise Log:</h5>
@@ -269,8 +272,7 @@
                 <strong>limit</strong> = number
               </li>
             </ul>
-            <br />
-            For example:
+            <li>For example:</li>
             <ul>
               <li>
                 GET all logs for User 'trackerUser':

@@ -48,6 +48,10 @@ form {
   border-radius: 5px;
 }
 
+form h3 {
+  margin-top: 0;
+}
+
 input {
   display: block;
   margin-bottom: 10px;
@@ -61,6 +65,10 @@ input {
 .btn-primary {
   background-color: #3da7f5;
   border: none;
+}
+
+.usage-list li {
+  margin-bottom: 0.5em;
 }
 
 code {

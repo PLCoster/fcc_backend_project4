@@ -42,7 +42,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // Serve static files from 'public' folder
 // http://expressjs.com/en/starter/static-files.html
-app.use(express.static('public'));
+app.use('/public', express.static('public'));
 
 // Send index.html on requests to root
 // http://expressjs.com/en/starter/basic-routing.html
