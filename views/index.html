@@ -1,46 +1,397 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Exercise Tracker | freeCodeCamp</title>
-    <link rel="shortcut icon" href="https://cdn.freecodecamp.org/universal/favicons/favicon.ico"  type="image/x-icon" />
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css" />
+    <title>Exercise Tracker</title>
+
+    <!-- FAVICONS -->
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/public/favicons/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/public/favicons/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/public/favicons/favicon-16x16.png"
+    />
+    <link rel="manifest" href="/public/site.webmanifest" />
+
+    <!-- STYLES -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"
+      integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto"
+      rel="stylesheet"
+      type="text/css"
+    />
     <link href="style.css" rel="stylesheet" type="text/css" />
   </head>
 
   <body>
-    <div class="container">
-      <h1>Exercise tracker</h1>
-      <form action="/api/users" method="post">
-        <h3>Create a New User</h3>
-        <p><code>POST /api/users</code></p>
-        <input id="uname" type="text" name="username" placeholder="username" />
-        <input type="submit" value="Submit" />
-      </form>
-      <form id="exercise-form" method="post">
-        <h3>Add exercises</h3>
-        <p><code>POST /api/users/:_id/exercises</code></p>
-        <input id="uid" type="text" name=":_id" placeholder=":_id" />
-        <input id="desc" type="text" name="description" placeholder="description*" />
-        <input id="dur" type="text" name="duration" placeholder="duration* (mins.)" />
-        <input id="date" type="text" name="date" placeholder="date (yyyy-mm-dd)" />
-        <input type="submit" value="Submit" />
-      </form>
-      <p>
-        <strong>GET user's exercise log: </strong>
-        <code>GET /api/users/:_id/logs?[from][&amp;to][&amp;limit]</code>
-      </p>
-      <p><strong>[ ]</strong> = optional</p>
-      <p><strong>from, to</strong> = dates (yyyy-mm-dd); <strong>limit</strong> = number</p>
-    </div>
-    <script>
-      const exerciseForm = document.getElementById("exercise-form");
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href=".">Exercise Tracker</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNavDropdown"
+          aria-controls="navbarNavDropdown"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a
+                class="nav-link active"
+                href="https://plcoster.github.io/homepage/"
+              >
+                Home
+              </a>
+            </li>
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="navbarDropdownMenuLink"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                FreeCodeCamp Backend Projects
+              </a>
+              <ul
+                class="dropdown-menu"
+                aria-labelledby="navbarDropdownMenuLink"
+              >
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="https://fcc-backend-project1.plcoster.repl.co"
+                  >
+                    Timestamp Microservice
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="https://fcc-backend-project2.plcoster.repl.co"
+                  >
+                    Request Header Parser Microservice
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="https://fcc-backend-project3.plcoster.repl.co"
+                  >
+                    URL Shortener Microservice
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="https://fcc-backend-project4.plcoster.repl.co"
+                  >
+                    Exercise Tracker
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="https://fcc-backend-project5.plcoster.repl.co"
+                  >
+                    File Metadata Microservice
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                href="https://plcoster.github.io/homepage/projects.html"
+              >
+                All Projects
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="https://github.com/PLCoster">
+                <i class="fab fa-github"></i> Github
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="https://linkedin.com/in/plcoster">
+                <i class="fab fa-linkedin"></i>
+                LinkedIn
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
 
-      exerciseForm.addEventListener("submit", () => {
-        const userId = document.getElementById("uid").value;
+    <div class="container">
+      <main>
+        <h1>Exercise Tracker</h1>
+
+        <hr />
+
+        <!-- API SUBMISSION FORMS-->
+        <div class="d-flex flex-row justify-content-center flex-wrap">
+          <form action="/api/users" method="post">
+            <h3>Create a New User</h3>
+            <p><code>POST /api/users</code></p>
+            <input
+              id="uname"
+              class="form-control"
+              type="text"
+              name="username"
+              placeholder="username"
+              required
+            />
+            <input type="submit" class="btn btn-primary" value="Create User" />
+          </form>
+
+          <form id="exercise-form" method="post">
+            <h3>Add Exercise</h3>
+            <p><code>POST /api/users/:_id/exercises</code></p>
+            <input
+              id="uid"
+              type="text"
+              name=":_id"
+              placeholder=":_id"
+              required
+            />
+            <input
+              id="desc"
+              class="form-control"
+              type="text"
+              name="description"
+              placeholder="description*"
+              required
+            />
+            <input
+              id="dur"
+              class="form-control"
+              type="text"
+              name="duration"
+              placeholder="duration* (mins.)"
+              required
+            />
+            <input
+              id="date"
+              class="form-control"
+              type="text"
+              name="date"
+              placeholder="date (yyyy-mm-dd)"
+            />
+            <input type="submit" class="btn btn-primary" value="Add Exercise" />
+          </form>
+        </div>
+        <p class="note">
+          <strong>NOTE: </strong>This is a DEMO site. Created Users and
+          Exercises are deleted after 24hrs.
+        </p>
+
+        <hr />
+
+        <h3>Example Usage:</h3>
+
+        <h5>To create a new User:</h5>
+        <ul class="usage-list">
+          <li>Submit a username using the 'Create a New User' form above.</li>
+          <li>
+            Alternatively, submit a POST request to
+            <code>/api/users</code> with a body containing a url encoded field
+            of 'username' (e.g. <code>'username=trackerUser'</code>)
+          </li>
+        </ul>
+
+        <h5>To view all Users:</h5>
+        <ul class="usage-list">
+          <li>
+            Send a GET request to <code>/api/users</code>
+            <br />
+            <a href="/api/users">/api/users</a>
+          </li>
+        </ul>
+
+        <h5>To add an Exercise to a User Account:</h5>
+        <ul class="usage-list">
+          <li>Submit an exercise using the 'Add Exercise' form above.</li>
+          <li>
+            Alternatively, send a POST request to
+            <code>/api/users/&lt;USER_ID&gt;/exercises</code> with a valid
+            USER_ID, and a body containing url encoded fields of:
+            <ul>
+              <li>'description' (string)</li>
+              <li>'duration' (integer)</li>
+              <li>'date' (optional, YYYY-MM-DD)</li>
+            </ul>
+            For example:
+            <br />
+            <code>'description=jogging&duration=30&date=2022-07-16</code>
+          </li>
+        </ul>
+
+        <h5>To view a User's Exercise Log:</h5>
+        <ul class="usage-list">
+          <li>
+            Send a GET request to
+            <code>/api/users/:_id/logs?[from][&to][&limit]</code>
+            <br />
+            where:
+            <ul>
+              <li><code>[]</code> denote optional filter query parameters</li>
+              <li>
+                <strong>from, to</strong> = dates (yyyy-mm-dd);
+                <strong>limit</strong> = number
+              </li>
+            </ul>
+            <br />
+            For example:
+            <ul>
+              <li>
+                GET all logs for User 'trackerUser':
+                <br />
+                <a href="/api/users/6309708985ce1de85952ada6/logs"
+                  >/api/users/6309708985ce1de85952ada6/logs</a
+                >
+              </li>
+              <li>
+                GET 10 most recent logs for User 'trackerUser':
+                <br />
+                <a href="/api/users/6309708985ce1de85952ada6/logs?limit=10"
+                  >/api/users/6309708985ce1de85952ada6/logs?limit=10</a
+                >
+              </li>
+              <li>
+                GET up to 5 most recent logs between 1st Jan 2021 and 31st Dec
+                2022 for User 'trackerUser':
+                <br />
+                <a
+                  href="/api/users/6309708985ce1de85952ada6/logs?limit=5&from=2021-01-01&to=2021-12-31"
+                  >/api/users/6309708985ce1de85952ada6/logs?limit=5&from=2021-01-01&to=2021-12-31</a
+                >
+              </li>
+            </ul>
+          </li>
+        </ul>
+
+        <h3>Example Output:</h3>
+        <p>
+          When creating a new User, or requesting all Users, a single User
+          object or array of User objects will be returned in JSON format,
+          respectively. The User objects have the following form:
+        </p>
+
+        <code class="block">
+          {
+          <ul class="indent">
+            <li>"username": "trackerUser",</li>
+            <li>"_id": "6309708985ce1de85952ada6",</li>
+          </ul>
+          }
+        </code>
+
+        <p>
+          When adding an Exercise for a User, an Exercise Object in JSON format
+          is returned with the form:
+        </p>
+
+        <code class="block">
+          {
+          <ul class="indent">
+            <li>"username": "trackerUser",</li>
+            <li>"_id": "6309708985ce1de85952ada6",</li>
+            <li>"description": "jogging",</li>
+            <li>"duration": "35",</li>
+            <li>"date": "Fri Aug 26 2022"</li>
+          </ul>
+          }
+        </code>
+
+        <p>
+          When requesting the exercise logs for a User, a Log Object in JSON
+          format is returned with the form:
+        </p>
+
+        <code class="block">
+          {
+          <ul class="indent">
+            <li>"username": "trackerUser",</li>
+            <li>"_id": "6309708985ce1de85952ada6",</li>
+            <li>"filters": {</li>
+            <ul class="indent">
+              <li>"from": "2021-01-01" || "any",</li>
+              <li>"to": "2021-12-31" || "any",</li>
+              <li>limit: 2 || "all"</li>
+              <li>},</li>
+            </ul>
+            <li>"count": 2,</li>
+            <li>"log": [</li>
+            <ul class="indent">
+              <li>
+                {"description":"jogging","duration":30,"date":"Sat Dec 25
+                2021"},
+              </li>
+              <li>
+                {"description":"swimming","duration":60,"date":"Fri Dec 24
+                2021"}
+              </li>
+              <li>]</li>
+            </ul>
+          </ul>
+          }
+        </code>
+      </main>
+
+      <footer>
+        <p>
+          A project set by
+          <a href="https://www.freecodecamp.org/">freeCodeCamp</a>
+        </p>
+      </footer>
+    </div>
+
+    <!-- Custom Form Submit -->
+    <script>
+      const exerciseForm = document.getElementById('exercise-form');
+
+      exerciseForm.addEventListener('submit', () => {
+        const userId = document.getElementById('uid').value;
         exerciseForm.action = `/api/users/${userId}/exercises`;
 
         exerciseForm.submit();
       });
     </script>
+
+    <!-- Bootstrap Script -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>
