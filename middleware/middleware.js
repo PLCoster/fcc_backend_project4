@@ -79,19 +79,40 @@ middleware.createExercise = (req, res, next) => {
   const user_id = res.locals.userDocument._id;
   let { description, duration, date } = req.body;
 
+  console.log('TRYING TO CREATE EXERCISE:');
   console.log(user_id, description, duration, date);
 
-  // If date is not defined, use current date:
-  if (!date) {
-    date = Date.now();
-  } else {
-    date = new Date(date).getTime();
+  let numericDuration = true;
+  // Ensure duration is an integer, otherwise set null to return error result json:
+  if (!/[0-9]+/.test(duration)) {
+    numericDuration = false;
   }
 
-  if (!user_id || !description || !duration || isNaN(date)) {
+  // If date is not defined, use current date:
+  let unixDate;
+  let validDate = true;
+  if (!date) {
+    unixDate = Date.now();
+  } else {
+    // Ensure date matches YYYY-MM-DD format
+    if (!/[1-9][0-9]{3}-[0-1][0-9]-[0-3][0-9]/.test(date)) {
+      validDate = false;
+    } else {
+      const dateObj = new Date(date);
+      dateObj.setHours(0, 0, 0, 0);
+      unixDate = dateObj.getTime();
+    }
+  }
+
+  console.log(numericDuration, validDate);
+
+  if (!description || !numericDuration || !validDate) {
     return res.json({
       error:
-        '_id, description, duration and a valid date are required to create an Exercise',
+        'Description (string), duration (number) and a valid date (YYYY-MM-DD) are required to create an Exercise',
+      description,
+      duration,
+      date,
     });
   }
 
@@ -146,8 +167,8 @@ middleware.getFilteredExercisesByUserId = (req, res, next) => {
   }
 
   Exercise.find({ user_id, date: dateRequirements })
-    .limit(limit ? parseInt(limit) : null)
     .sort('-date')
+    .limit(limit ? parseInt(limit) : null)
     .then((exerciseDocuments) => {
       res.locals.exerciseDocumentArray = exerciseDocuments;
       next();
