@@ -1,6 +1,14 @@
 const User = require('../models/User');
 const Exercise = require('../models/Exercise');
 
+// Validate that a date / to / from matches required format (YYYY-MM-DD)
+const validDateStr = (dateStr) => {
+  if (!/^[1-9][0-9]{3}-[0-1][0-9]-[0-3][0-9]$/.test(dateStr)) {
+    return false;
+  }
+  return true;
+};
+
 const middleware = {};
 
 // Takes 'username' parameter from req.body and creates a new user
@@ -89,13 +97,12 @@ middleware.createExercise = (req, res, next) => {
   }
 
   // If date is not defined, use current date:
-  let unixDate;
   let validDate = true;
   if (!date) {
     unixDate = Date.now();
   } else {
     // Ensure date matches YYYY-MM-DD format
-    if (!/[1-9][0-9]{3}-[0-1][0-9]-[0-3][0-9]/.test(date)) {
+    if (!validDateStr(date)) {
       validDate = false;
     } else {
       const dateObj = new Date(date);
@@ -145,6 +152,15 @@ middleware.getFilteredExercisesByUserId = (req, res, next) => {
     });
   }
 
+  // If either time is invalid (NaN time), return an error:
+  if ((from && !validDateStr(from)) || (to && !validDateStr(to))) {
+    return res.json({
+      error: `Invalid date given for from or to: FROM: ${from || 'N/A'}, TO: ${
+        to || 'N/A'
+      }`,
+    });
+  }
+
   const dateRequirements = { $gte: 0 };
   if (from) {
     dateRequirements.$gte = new Date(from).getTime();
@@ -152,18 +168,6 @@ middleware.getFilteredExercisesByUserId = (req, res, next) => {
 
   if (to) {
     dateRequirements.$lte = new Date(to).getTime();
-  }
-
-  // If either time is invalid (NaN time), return an error:
-  if (
-    (from && isNaN(dateRequirements.$gte)) ||
-    (to && isNaN(dateRequirements.$lte))
-  ) {
-    return res.json({
-      error: `Invalid date given for from or to: FROM: ${from || 'N/A'}, TO: ${
-        to || 'N/A'
-      }`,
-    });
   }
 
   Exercise.find({ user_id, date: dateRequirements })
