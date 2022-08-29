@@ -23,7 +23,6 @@ middleware.createUser = (req, res, next) => {
   // Create a new user and return user info:
   User.create({ username })
     .then((document) => {
-      console.log('MADE USER: ', document);
       res.locals.userDocument = document;
       return next();
     })
@@ -70,7 +69,6 @@ middleware.getAllUsers = (req, res, next) => {
     .select('_id username')
     .exec()
     .then((documents) => {
-      console.log(documents);
       res.locals.userDocumentArray = documents;
       next();
     })
@@ -87,9 +85,6 @@ middleware.createExercise = (req, res, next) => {
   const user_id = res.locals.userDocument._id;
   let { description, duration, date } = req.body;
 
-  console.log('TRYING TO CREATE EXERCISE:');
-  console.log(user_id, description, duration, date);
-
   let numericDuration = true;
   // Ensure duration is an integer, otherwise set null to return error result json:
   if (!/[0-9]+/.test(duration)) {
@@ -97,6 +92,7 @@ middleware.createExercise = (req, res, next) => {
   }
 
   // If date is not defined, use current date:
+  let unixDate;
   let validDate = true;
   if (!date) {
     unixDate = Date.now();
@@ -106,12 +102,10 @@ middleware.createExercise = (req, res, next) => {
       validDate = false;
     } else {
       const dateObj = new Date(date);
-      dateObj.setHours(0, 0, 0, 0);
+      dateObj.setUTCHours(0, 0, 0, 0);
       unixDate = dateObj.getTime();
     }
   }
-
-  console.log(numericDuration, validDate);
 
   if (!description || !numericDuration || !validDate) {
     return res.json({
@@ -119,11 +113,11 @@ middleware.createExercise = (req, res, next) => {
         'Description (string), duration (number) and a valid date (YYYY-MM-DD) are required to create an Exercise',
       description,
       duration,
-      date,
+      unixDate,
     });
   }
 
-  Exercise.create({ user_id, description, duration, date })
+  Exercise.create({ user_id, description, duration, date: unixDate })
     .then((exerciseDocument) => {
       res.locals.exerciseDocument = exerciseDocument;
       return next();
@@ -163,11 +157,15 @@ middleware.getFilteredExercisesByUserId = (req, res, next) => {
 
   const dateRequirements = { $gte: 0 };
   if (from) {
-    dateRequirements.$gte = new Date(from).getTime();
+    const gtDate = new Date(from);
+    gtDate.setUTCHours(0, 0, 0, 0);
+    dateRequirements.$gte = gtDate.getTime();
   }
 
   if (to) {
-    dateRequirements.$lte = new Date(to).getTime();
+    const ltDate = new Date(to);
+    ltDate.setUTCHours(23, 59, 59, 999);
+    dateRequirements.$lte = ltDate.getTime();
   }
 
   Exercise.find({ user_id, date: dateRequirements })
